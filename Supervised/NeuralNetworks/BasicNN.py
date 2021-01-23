@@ -1,6 +1,7 @@
 from random import *
 from math import *
 from copy import deepcopy
+import numpy as np
 
 
 class Neuron:
@@ -170,32 +171,17 @@ class NeuralNetwork:
             print()
 
     # used to save network to a file
-    def write_to_file(self, file):
-        for layer in self.network:
-            for neuron in layer:
-                for weight in neuron.weights:
-                    file.write(f"{weight}")
-                    if weight != neuron.weights[-1]:
-                        file.write(",")
-                file.write("\n")
-            file.write("\n")
+    def save(self, file):
+        data = [[neuron.weights for neuron in layer] for layer in self.network]
+        array = np.array(data)
+        np.save(file, array)
 
     # used to apply a saved network
-    def insert_weights_from_file(self, file):
-        layer = 0
-        layer_weights = []
-        for line in file:
-            line = line.strip()
-            if line != "":
-                weights = line.split(",")
-                print(weights)
-                weights = [float(i.strip(",")) for i in weights]
-                layer_weights.append(weights)
-            else:
-                for neuron, weight in zip(self.network[layer], layer_weights):
-                    neuron.weights = weight
-                layer += 1
-                layer_weights = []
+    def load(self, file):
+        data = np.load(file)
+        for saved_layer, layer in zip(data, self.network):
+            for saved_data, neuron in zip(saved_layer, layer):
+                neuron.weights = list(saved_data)
 
     # attaches a neural network to the output of the first
     def extend(self, other_net):
