@@ -1,12 +1,16 @@
 import math
 import numpy as np
+from Supervised.supervised_general import SupervisedInterface
 
 
-class KNearestNeighbors:
+class KNearestNeighbors(SupervisedInterface):
     # https://machinelearningmastery.com/tutorial-to-implement-k-nearest-neighbors-in-python-from-scratch/
 
     def __init__(self, data, results, k, use="classification"):
-        self.data, self.results, self.k, self.use = data, results, k, use
+        self.data, self.results = data, results
+
+    def train(self, k, use="classification"):
+        self.k, self.use = k, use
 
     @staticmethod
     def distance(point1, point2):
@@ -38,16 +42,19 @@ class KNearestNeighbors:
 class NaiveBayes:
     # https://machinelearningmastery.com/naive-bayes-classifier-scratch-python/
     def __init__(self, data, classes):
-        self.classes = self._create_classes(data, classes)
+        self.data = data
+        self.results = classes
+
+    def train(self):
+        self.classes = self._create_classes()
 
     def gaussian_probability(self, datum, class_index):
         _, mean, std = self.classes[class_index][0]
         return np.mean([(1 / (math.sqrt(2 * math.pi) * std)) * math.exp(-((x-mean)**2 / (2 * std**2))) for x in datum])
 
-    @staticmethod
-    def _create_classes(data, classes):
+    def _create_classes(self):
         groups = dict()
-        for datum, result in zip(data, classes):
+        for datum, result in zip(self.data, self.results):
             if result in groups:
                 groups[result].append(datum)
             else:

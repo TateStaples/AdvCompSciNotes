@@ -1,7 +1,8 @@
 import numpy as np
+from Supervised.supervised_general import SupervisedInterface
 
 
-class LinearRegressor:
+class LinearRegressor(SupervisedInterface):
     """
     Class to fit data on several types of linear regression models
     """
@@ -33,6 +34,9 @@ class LinearRegressor:
         assert len(data) == len(results), "The amount of data should equal the amount of results"
         data = np.c_[np.ones((data.shape[0], 1)), data]
         return data, results
+
+    def train(self):
+        pass
 
     def linear_regression(self, data, results):
         """
