@@ -2,6 +2,8 @@ from VGG import Vgg16
 from transformer import TransformerNet
 import utils
 
+import numpy as np
+
 import os
 import time
 
@@ -101,11 +103,14 @@ def apply_style():
 
 
 def style_img(img, model):
+    img = np.transpose(img, (2, 0, 1))
     tensor = torch.from_numpy(img).float().unsqueeze(0)
     with torch.no_grad():
         content_image = torch.autograd.Variable(utils.preprocess_batch(tensor))
         output = model(content_image)
-        utils.tensor_save_rgbimage(output, output_path)
+    img = output.clone().clamp(0, 255).numpy()
+    img = np.transpose(img, (0, 2, 3, 1))[0]
+    return img
 
 
 # training configs - only used on train
@@ -124,7 +129,7 @@ learn_rate = .001
 vgg_path = ""
 
 # images
-style = "starry-night"
+style = "udnie"
 content_path = "examples/dog.jpg"  # only used on apply
 output_path = "output/starry_dog.png"  # only used on apply
 
@@ -138,7 +143,5 @@ if __name__ == '__main__':
         train_style()
     else:
         apply_style()
-
-
 
 

@@ -8,7 +8,8 @@ import cv2
 
 
 def tensor_load_rgbimage(filename, size=None, scale=None):
-    img = Image.open(filename)
+    img = cv2.imread(filename)
+    print(img.shape)
     if size is not None:
         img = img.resize((size, size), Image.ANTIALIAS)
     elif scale is not None:
@@ -26,11 +27,12 @@ def tensor_save_rgbimage(tensor, filename, cuda=False):
     else:
         img = tensor.clone().clamp(0, 255).numpy()
     img = np.transpose(img, (0, 2, 3, 1))[0]
-    cv2.imwrite("output/thing_and_stuff.png", img)
+    cv2.imwrite(filename, img)
 
 
 def tensor_save_bgrimage(tensor, filename, cuda=False):
     channels = torch.chunk(tensor, 3)
+    print(channels.shape)
     b, g, r = channels
     tensor = torch.cat((r, g, b))
     tensor_save_rgbimage(tensor, filename, cuda)

@@ -1,0 +1,12 @@
+Exaplained: https://www.youtube.com/watch?v=VQEMptfWpLk
+main paper: https://arxiv.org/abs/1603.08155
+
+Implementations:
+https://towardsdatascience.com/real-time-video-neural-style-transfer-9f6f84590832
+https://github.com/lengstrom/fast-style-transfer/blob/master/README.md#stylizing-video
+https://github.com/ChengBinJin/Real-time-style-transfer/blob/master/style_transfer.py
+https://github.com/NeuralVFX/real-time-style-transfer/blob/master/style_transfer.py
+https://ondrejtexler.github.io/patch-based_training/
+https://github.com/hwalsuklee/tensorflow-fast-style-transfer
+
+more papers: https://paperswithcode.com/task/style-transfer
