@@ -12,7 +12,7 @@ style = "udnie"
 style_model = TransformerNet()
 style_model.load_state_dict(torch.load(f"saved-models/{style}.pth"))
 
-token = 'NzcwNzQwMDk3Njc4MDQ5Mjkw.X5h9pg.miBpFUHK9f_eRfkj0sU_sL5LX_M'
+token = ''
 client = discord.Client()
 
 @client.event
