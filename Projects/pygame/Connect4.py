@@ -10,7 +10,7 @@ window = pygame.display.set_mode((windowWidth, windowHeight))
 
 max_val = 1000000
 min_val = -1000000
-
+best_score = 1000
 
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
@@ -35,14 +35,11 @@ def draw_board():
         for col, spot in enumerate(row):
             color = {0: WHITE, 1: RED, -1: YELLOW}[spot]
             pygame.draw.circle(window, color, (225 + 125 * col, 150 + row_count * 80), 30) # spots
-    # pygame.display.update()
 
 
 def move(a_board, col, player):
-    if a_board[0][col] != 0:
-        print("invalid move")
-        return a_board
     column = a_board[:, col]
+    if column.all(): return a_board
     column[column.nonzero()[0][0]-1 if column.any() else len(column)-1] = player
     return a_board
 
@@ -57,14 +54,11 @@ def board_state(the_board, player):
             if list_in([not_player] * 4, piece): return -1
 
     flipped = np.fliplr(the_board)
-    print("-"*10)
-    print(the_board)
-    print(player, not_player)
     for diag in range(-2, 4):
         if list_in([player] * 4, the_board.diagonal(diag)): return 1
+        if list_in([player] * 4, flipped.diagonal(diag)): return 1
+        if list_in([not_player] * 4, the_board.diagonal(diag)): return -1
         if list_in([not_player] * 4, flipped.diagonal(diag)): return -1
-        print(flipped.diagonal(diag))
-        print(the_board.diagonal(diag))
 
     return 0
 
@@ -88,8 +82,7 @@ board_values = np.array([
 
 def evaluate_board(the_board, player):
     state = board_state(the_board, player)
-    if state != 0:
-        return state * 500
+    if state != 0: return state * best_score
 
     score = (the_board * board_values * player).sum()
     return score
@@ -103,43 +96,45 @@ def encode(the_board):
     return the_board.tostring()
 
 
-states = dict()
+scored_states = dict()
+final_states = dict()
 def check_cache(the_board):
-    global states
-    try: return states[encode(the_board)]
-    except:return None
+    encoded = encode(the_board)
+    if encoded in scored_states:
+        return scored_states[encoded], False
+    if encoded in final_states:
+        return final_states[encoded], True
+    return None, None
 
 
-nodes = 0
-alpha_cut = 0
-cache_cut = 0
 def Mini_Max(the_board, player, current_ply, max_ply, og, alpha=min_val, beta=max_val):  # alpha is branch max and beta is branch min
-    global cache_cut, alpha_cut, nodes, states
+    caching = False
+    alpha_beta = True
     if current_ply >= max_ply or game_over(the_board): return evaluate_board(the_board, og)
     other = player * -1
     maxing = current_ply % 2 == 0
     target_val = min_val if maxing else max_val
     best_play = -1
     for play in get_moves(the_board):
-        nodes += 1
         modified = move(the_board.copy(), play, player)
         value = Mini_Max(modified, other, current_ply + 1, max_ply, og, alpha, beta)
-        # cached_val = check_cache(modified)
-        # if cached_val is None:
-        #     value = Mini_Max(modified, other, current_ply + 1, max_ply, og, alpha, beta)
-        # else:
-        #     cache_cut += 1
-        #     value = cached_val
-        # states[encode(modified)] = value
+        if value == (best_score if maxing else -best_score): return value
+        if caching:
+            cached_val, _final = check_cache(modified)
+            if cached_val is None:
+                value, _final = Mini_Max(modified, other, current_ply + 1, max_ply, og, alpha, beta)
+            else:
+                value = cached_val
+            scored_states[encode(modified)] = value
         if (value > target_val) == maxing:
             target_val = value
             best_play = play
-            if (alpha < target_val) if maxing else (beta < target_val):
-                if maxing: alpha = target_val
-                else: beta = target_val
-            if beta <= alpha:
-                alpha_cut += 1
-                break
+            if alpha_beta and not caching:
+                if (alpha < target_val) if maxing else (beta < target_val):
+                    if maxing: alpha = target_val
+                    else: beta = target_val
+                if beta <= alpha:
+                    break
     if current_ply == 0:
         global board
         board = move(board, best_play, og)
@@ -147,8 +142,7 @@ def Mini_Max(the_board, player, current_ply, max_ply, og, alpha=min_val, beta=ma
 
 
 def ai_move(player):
-    global board
-    Mini_Max(board, player=player, current_ply=0, max_ply=3, og=player, alpha=min_val, beta=max_val)
+    Mini_Max(board, player=player, current_ply=0, max_ply=5, og=player, alpha=min_val, beta=max_val)
 
 
 def human_move(player):
@@ -179,7 +173,8 @@ def main():
     global board, nodes, alpha_cut, cache_cut
     player = 1
     primary_player = "human"
-    secondary_player = "human"
+    secondary_player = "ai"
+    draw_board()
     while not game_over(board):
         _type = primary_player if player == 1 else secondary_player
         if _type == "human":
@@ -189,11 +184,12 @@ def main():
 
         status = board_state(board, 1)
         draw_board()
+        pygame.display.update()
         if status:
             break
-        states.clear()
+        scored_states.clear()
         player *= -1
-    answers = ["draw", "you win", "you lose"]
+    answers = ["draw", "Player 1 wins", "Player 2 wins"]
     print(answers[status])
 
 
