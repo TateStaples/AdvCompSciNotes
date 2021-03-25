@@ -24,7 +24,7 @@ class Pathfinder(AStar):
         self.draw_route(route1, (0, 255, 0))
         cv2.imwrite("result.png", self.img)
         print("done route one", route1)
-        print(self.open_list)
+        cv2.imwrite("process.png", self.process_img)
 
         self.open_list.clear()
         self.closed_list.clear()
@@ -37,7 +37,7 @@ class Pathfinder(AStar):
 
     def draw_route(self, route, color=(255, 0, 0)):
         for node in route:
-            self.img[node.pos, slice(None)] = color
+            self.img[node.pos, :] = color
 
     @property
     def max(self):
@@ -47,15 +47,6 @@ class Pathfinder(AStar):
     def min(self):
         return self.map.min()
 
-    def draw(self):
-        # print(self.img.shape)
-        return
-        img = self.img.copy()
-        for node in self.open_list:
-            img[node.pos, :] = (0, 0, 255)
-        cv2.imshow("demonstration", self.img)
-        # cv2.imwrite("process.png", self.img)
-
     @staticmethod
     def grey_to_img(map):
         map = map - map.min()
@@ -63,7 +54,7 @@ class Pathfinder(AStar):
         return cv2.cvtColor(map, cv2.COLOR_GRAY2RGB)
 
     def on_close_node(self, node):
-        # return
+        return
         self.process_img[(*node.pos, slice(None))] = (0, 0, 255)
         cv2.imshow("test", self.process_img/255)
         cv2.imwrite("process.png", self.process_img)

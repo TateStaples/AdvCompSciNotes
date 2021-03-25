@@ -30,15 +30,11 @@ class AStar:
 
             for neighbor, dis in self.neighbors(node.pos):
                 child = Node(node, neighbor, dis)
-
-                if child in home_distances and home_distances[child] > child.dis_to_start:
+                if home_distances.get(child, child.dis_to_start + 1) > child.dis_to_start:
                     home_distances[child] = child.dis_to_start
-                    heapq.heappush(open_list, child)
-                    self.on_open_node(child)
-                elif child not in closed_list:
-                    home_distances[child] = child.dis_to_start
-                    heapq.heappush(open_list, child)
-                    self.on_open_node(child)
+                    if child not in closed_list:
+                        heapq.heappush(open_list, child)
+                        self.on_open_node(child)
                 else:
                     del child
 
@@ -55,13 +51,6 @@ class AStar:
             path.append(node)
             node = node.parent
         return path[::-1]
-
-    @staticmethod
-    def get_index(list, value):
-        for count, node in enumerate(list):
-            if node.value >= value:
-                return count
-        return len(list)
 
     def neighbors(self, pos):
         r, c = pos
@@ -91,13 +80,9 @@ class AStar:
 
 
 class Node:
-    start_weight = 1
-    end_weight = 1
-
     def __init__(self, parent, pos, dis=1):
         self.parent = parent
         self.pos = pos
-        self.children = list()
         self.dis_to_start = 0 if self.parent is None else self.parent.dis_to_start + dis
         self.dis_to_end = AStar.active.distance(self.pos)
         self.value = self.dis_to_start + self.dis_to_end
@@ -141,30 +126,5 @@ def distance(pos1, pos2):
     return math.sqrt(sum((p1 - p2)**2 for p1, p2 in zip(pos1, pos2)))
 
 
-class Test:
-    def __init__(self, **kwargs):
-        self.stuff = dict()
-        for key in kwargs:
-            self.__setattr__(key, kwargs[key])
-            self.stuff[key] = kwargs[key]
-    def __repr__(self):
-        return str(self.stuff)
-
-    def __hash__(self):
-        print("test")
-        return 1
-
-
 if __name__ == '__main__':
-    print(hash(11.4) - hash(10.3))
-    quit()
-    AStar((1, 1), (4, 4), [])
-    test = set()
-    n1 = Node(None, (1, 2))
-    n2 = Node(None, (1, 1))
-    n3 = Node(None, (1, 3))
-    test.add(n1)
-    test.add(n2)
-    test.add(n3)
-    print(test.pop())
-    print(test)
+    pass
