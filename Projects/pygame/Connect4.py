@@ -1,12 +1,10 @@
 import pygame
 import numpy as np
-import time
 pygame.init()
 
 windowWidth = 1200
 windowHeight = 700
 window = pygame.display.set_mode((windowWidth, windowHeight))
-
 
 max_val = 1000000
 min_val = -1000000
@@ -23,8 +21,7 @@ board = np.zeros((6, 7))
 def list_in(sub, super):
     for start_index in range(len(super) - len(sub) + 1):
         _slice = super[start_index : start_index + len(sub)]
-        if list(_slice) == sub:
-            return True
+        if list(_slice) == sub: return True
     return False
 
 
@@ -64,10 +61,7 @@ def board_state(the_board, player):
 
 
 def game_over(the_board):
-    state = board_state(the_board, 1)
-    if state:
-        return state
-    return the_board[0].all()
+    return board_state(the_board, 1) or the_board[0].all()  # if one wins or it is draw
 
 
 board_values = np.array([
@@ -83,7 +77,6 @@ board_values = np.array([
 def evaluate_board(the_board, player):
     state = board_state(the_board, player)
     if state != 0: return state * best_score
-
     score = (the_board * board_values * player).sum()
     return score
 
@@ -143,6 +136,7 @@ def Mini_Max(the_board, player, current_ply, max_ply, og, alpha=min_val, beta=ma
 
 def ai_move(player):
     Mini_Max(board, player=player, current_ply=0, max_ply=5, og=player, alpha=min_val, beta=max_val)
+    scored_states.clear()
 
 
 def human_move(player):
@@ -170,7 +164,7 @@ def human_move(player):
 
 
 def main():
-    global board, nodes, alpha_cut, cache_cut
+    global board
     player = 1
     primary_player = "human"
     secondary_player = "ai"
@@ -185,9 +179,7 @@ def main():
         status = board_state(board, 1)
         draw_board()
         pygame.display.update()
-        if status:
-            break
-        scored_states.clear()
+        if status: break
         player *= -1
     answers = ["draw", "Player 1 wins", "Player 2 wins"]
     print(answers[status])
@@ -196,8 +188,6 @@ def main():
 if __name__ == '__main__':
     main()
 
-    # this is so the app doesn't quit when over
-    pygame.display.update()
     while True:
         pygame.time.delay(1000)
         for event in pygame.event.get():
