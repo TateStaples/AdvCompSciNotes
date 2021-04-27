@@ -1,0 +1,1 @@
+This is an implementation of A* pathfinding to minimize vertical movement while moving across a mountain range
