@@ -1,11 +1,17 @@
 from AbstractAStar import AStar, Node
 import numpy as np
 import cv2
+from PIL import Image
 
 
 class Pathfinder(AStar):
+    show_counter = 0
+    frequency = 500
+
     def __init__(self, row, file):
-        super(Pathfinder, self).__init__((row, 0), None, np.loadtxt(file).astype(np.float32))
+        file = np.loadtxt(file) if ".dat" in file else np.array(Image.open(file))
+        file = file.astype(np.float32)
+        super(Pathfinder, self).__init__((row, 0), None, file)
         # Node.end_weight = self.average_change() / 2
         self.img = self.grey_to_img(self.map)
         self.process_img = self.img.copy()
@@ -23,8 +29,9 @@ class Pathfinder(AStar):
         route1 = self.path()
         self.draw_route(route1, (0, 255, 0))
         cv2.imwrite("result.png", self.img)
-        print("done route one", route1)
+        # print("done route one", route1)
         cv2.imwrite("process.png", self.process_img)
+        self.process_img = self.img.copy()
 
         self.open_list.clear()
         self.closed_list.clear()
@@ -37,7 +44,7 @@ class Pathfinder(AStar):
 
     def draw_route(self, route, color=(255, 0, 0)):
         for node in route:
-            self.img[node.pos, :] = color
+            self.img[(*node.pos, slice(None))] = color
 
     @property
     def max(self):
@@ -54,12 +61,13 @@ class Pathfinder(AStar):
         return cv2.cvtColor(map, cv2.COLOR_GRAY2RGB)
 
     def on_close_node(self, node):
-        return
+        self.show_counter += 1
         self.process_img[(*node.pos, slice(None))] = (0, 0, 255)
-        cv2.imshow("test", self.process_img/255)
-        cv2.imwrite("process.png", self.process_img)
-        if cv2.waitKey(1):
-            pass
+        if self.frequency is not None and not self.show_counter % self.frequency:
+            cv2.imshow("test", self.process_img/255)
+            # cv2.imwrite("process.png", self.process_img)
+            if cv2.waitKey(1):
+                pass
 
     def average_change(self):
         vertical_change = abs(self.map[:-1, :] - self.map[1:, :])
@@ -75,6 +83,6 @@ def greedy(file_name, pos):
 
 if __name__ == '__main__':
     # print(test[:-1])
-    p = Pathfinder(240, "Colorado_480x480.dat")
+    p = Pathfinder(240, "Colorado_844x480.dat")
     p()
         
