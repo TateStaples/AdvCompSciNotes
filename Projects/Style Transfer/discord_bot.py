@@ -8,18 +8,26 @@ import aiofiles
 import aiohttp
 
 
-style = "udnie"
-style_model = TransformerNet()
-style_model.load_state_dict(torch.load(f"saved-models/{style}.pth"))
+styles = ["udnie", "mosaic", "starry-night", "candy"]
+models = dict()
+for style in styles:
+    model = TransformerNet()
+    model.load_state_dict(torch.load(f"saved-models/{style}.pth"))
+    models[style] = model
 
-token = ''
+style = styles[0]
+token = 'NzcwNzQwMDk3Njc4MDQ5Mjkw.X5h9pg.Mn1J3JfekkUTlhKctt66cGApDPs'
 client = discord.Client()
 
 @client.event
 async def on_message(message):
+    global style
     if message.author == client.user:
         return
-    if len(message.attachments) == 0: return 
+    if len(message.attachments) == 0:
+        style = message.content
+        print(style)
+        return
     url = message.attachments[0].url
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
@@ -27,7 +35,7 @@ async def on_message(message):
             await f.write(await response.read())
             await f.close()
     img = cv2.imread("placeholder.png")
-    img = real_time.style_img(img, style_model)
+    img = real_time.style_img(img, models[style])
     await send_img(message.channel, img)
 
 
@@ -38,6 +46,7 @@ async def send_img(channel, img):
 # video = cv2.VideoCapture(1)
 
 if __name__ == '__main__':
+    print("run")
     client.run(token)
     # _, frame = video.read()
     # print(frame.sum())

@@ -26,7 +26,7 @@ def train_style():
     # create some important objects
     transformer = TransformerNet()
     vgg = Vgg16()
-    # vgg.load_state_dict(torch.load(os.path.join(vgg_path, "vgg16.wieght")))
+    vgg.load_state_dict(torch.load(os.path.join(vgg_path, "vgg16.wieght")))
 
     optimizer = torch.optim.Adam(transformer.parameters(), learn_rate)
     loss_calculator = torch.nn.MSELoss()
@@ -130,8 +130,8 @@ vgg_path = ""
 
 # images
 style = "udnie"
-content_path = "examples/dog.jpg"  # only used on apply
-output_path = "output/starry_dog.png"  # only used on apply
+content_path = "source.png"  # only used on apply
+output_path = "output/test.png"  # only used on apply
 
 
 if __name__ == '__main__':
