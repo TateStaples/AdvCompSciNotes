@@ -1,3 +1,5 @@
+import librosa
+
 import darknet.darknet as dn
 import cv2
 
@@ -29,4 +31,3 @@ def annotate_frame(img, labels):
     for label in labels:
         img = label.draw(img)
     return img
-
