@@ -13,4 +13,6 @@ and will randomly choose a quote. This is a replacement for many of my friends w
 
 
 ## Other Applications
-While most fo th
+While most of these programs are not very serious, YOLO has some very powerful applications. From self driving cars that
+can identify signs, pedistrians, and more to automated sports drones that can follow you and record extreme stunts. 
+Computer Vision is advancing at a really quick pace.

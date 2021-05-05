@@ -13,11 +13,11 @@ class BetterVisual(Pathfinder):
         return self.map[(int(x), int(y))]# got to scale so height at same scale as dx
 
     def __call__(self, *args, **kwargs):
-        route = self.path()
+        # route = self.path()
         # print("done pathing")
-        data = np.array([(*node.pos, self.map[node.pos]) for node in route])
-        np.save("path", np.array(data))
-        # data = np.load("path.npy")
+        # data = np.array([(*node.pos, self.map[node.pos]) for node in route])
+        # np.save("path", np.array(data))
+        data = np.load("path.npz.npy")
         self.draw_3d_map(data)
 
     def draw_3d_map(self, route=None):
@@ -28,12 +28,13 @@ class BetterVisual(Pathfinder):
         Z = self.map
         fig = plt.figure()
         ax = plt.axes(projection='3d')
-        if route is not None:
-            plt.plot(route[:, 0], route[:, 1], route[:, 2], color="red")
         ax.axis('off')
         ax.set_zlim(0, self.map.max() * 3)
         ax.plot_surface(X, Y, Z, rstride=50, cstride=50,
                         cmap='viridis', edgecolor='none')
+        # ax.cla()
+        if route is not None:
+            plt.plot(route[:, 0], route[:, 1], route[:, 2], color="red")
         ax.set_xlabel('longitude')
         ax.set_ylabel('lattitude')
         ax.set_zlabel('height')

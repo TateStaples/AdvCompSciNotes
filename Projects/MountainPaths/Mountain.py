@@ -83,6 +83,6 @@ def greedy(file_name, pos):
 
 if __name__ == '__main__':
     # print(test[:-1])
-    p = Pathfinder(240, "Colorado_844x480.dat")
+    p = Pathfinder(240, "california.tiff")
     p()
         
