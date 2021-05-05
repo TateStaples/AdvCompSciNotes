@@ -1,11 +1,11 @@
 import librosa
 
-import darknet.darknet as dn
+import Darknet.darknet as dn
 import cv2
 
-labels = b"darknet/data/coco.names"
-model = b"darknet/cfg/yolov3-tiny.cfg"
-weights = b"darknet/yolov3-tiny.weights"
+labels = b"Darknet/coco.names"
+model = b"Darknet/yolov3-tiny.cfg"
+weights = b"Darknet/yolov3-tiny.weights"
 
 net = dn.load_net(model, weights, 0)
 meta = dn.METADATA(labels)
