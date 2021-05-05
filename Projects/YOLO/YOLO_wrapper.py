@@ -4,8 +4,8 @@ import Darknet.darknet as dn
 import cv2
 
 labels = b"Darknet/coco.names"
-model = b"Darknet/yolov3-tiny.cfg"
-weights = b"Darknet/yolov3-tiny.weights"
+model = b"resources/yolov3-tiny.cfg"
+weights = b"resources/yolov3-tiny.weights"
 
 net = dn.load_net(model, weights, 0)
 meta = dn.METADATA(labels)
